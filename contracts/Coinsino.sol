@@ -130,7 +130,6 @@ contract Coinsino is ReentrancyGuard, Ownable {
     );
 
     constructor() {
-      
         // initialize mapping
         _poolCalculator[0] = 1;
         _poolCalculator[1] = 11;
@@ -179,9 +178,11 @@ contract Coinsino is ReentrancyGuard, Ownable {
         );
 
         // Increment the total amount collected for the lottery round
-        _lotteries[_lotteryId].amountCollectedInEther += amountEtherToTransfer;
+        _lotteries[_lotteryId].amountCollectedInEther.add(
+            amountEtherToTransfer
+        );
 
-        for (uint256 i = 0; i < _ticketNumbers.length; i = unsafeInc(i)) {
+        for (uint256 i = 0; i < _ticketNumbers.length; i.add(1)) {
             uint32 t_TicketNumber = _ticketNumbers[i];
 
             require(
@@ -193,42 +194,36 @@ contract Coinsino is ReentrancyGuard, Ownable {
                 reverseValueAndConvertToUint(_ticketNumbers[i])
             );
 
-            // TODO: Do the following operation in a temporary array and store it in the mapping after that, outside the for loop
+            _numberTicketsPerLotteryId[_lotteryId][1 + (thisTicketNumber % 10)]
+                .add(1);
+            _numberTicketsPerLotteryId[_lotteryId][
+                11 + (thisTicketNumber % 100)
+            ].add(1);
+            _numberTicketsPerLotteryId[_lotteryId][
+                111 + (thisTicketNumber % 1000)
+            ].add(1);
+            _numberTicketsPerLotteryId[_lotteryId][
+                1111 + (thisTicketNumber % 10000)
+            ].add(1);
+            _numberTicketsPerLotteryId[_lotteryId][
+                11111 + (thisTicketNumber % 100000)
+            ].add(1);
+            _numberTicketsPerLotteryId[_lotteryId][
+                111111 + (thisTicketNumber % 1000000)
+            ].add(1);
 
-            unchecked {
-                _numberTicketsPerLotteryId[_lotteryId][
-                    1 + (thisTicketNumber % 10)
-                ]++;
-                _numberTicketsPerLotteryId[_lotteryId][
-                    11 + (thisTicketNumber % 100)
-                ]++;
-                _numberTicketsPerLotteryId[_lotteryId][
-                    111 + (thisTicketNumber % 1000)
-                ]++;
-                _numberTicketsPerLotteryId[_lotteryId][
-                    1111 + (thisTicketNumber % 10000)
-                ]++;
-                _numberTicketsPerLotteryId[_lotteryId][
-                    11111 + (thisTicketNumber % 100000)
-                ]++;
-                _numberTicketsPerLotteryId[_lotteryId][
-                    111111 + (thisTicketNumber % 1000000)
-                ]++;
+            _userTicketIdsPerLotteryId[msg.sender][_lotteryId].push(
+                currentTicketId
+            );
 
-                _userTicketIdsPerLotteryId[msg.sender][_lotteryId].push(
-                    currentTicketId
-                );
-
-                _tickets[currentTicketId] = Ticket({
-                    number: thisTicketNumber,
-                    owner: msg.sender
-                });
-            }
+            _tickets[currentTicketId] = Ticket({
+                number: thisTicketNumber,
+                owner: msg.sender
+            });
 
             // Increase lottery ticket number
-            unchecked {
-                currentTicketId++;
-            }
+
+            currentTicketId.add(1);
         }
 
         emit TicketsPurchase(msg.sender, _lotteryId, _ticketNumbers.length);
@@ -260,7 +255,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
         // Initialize the rewardInEtherToTransfer
         uint256 rewardInEtherToTransfer;
 
-        for (uint256 i = 0; i < _ticketIds.length; i = unsafeInc(i)) {
+        for (uint256 i = 0; i < _ticketIds.length; i.add(1)) {
             require(_pools[i] < 6, "Pool out of range");
 
             uint256 thisTicketId = _ticketIds[i];
@@ -362,7 +357,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
 
         uint256 amountToWithdrawToTreasury;
 
-        for (uint32 i = 0; i < 6; i++) {
+        for (uint32 i = 0; i < 6; i.add(1)) {
             uint32 j = 5 - i;
             uint32 transformedWinningNumber = _poolCalculator[j] +
                 (finalNumber % (uint32(10)**(j + 1)));
@@ -394,7 +389,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
                     ][transformedWinningNumber];
                 }
             } else {
-                _lotteries[_lotteryId].ether\PerPool[j] = 0;
+                _lotteries[_lotteryId].etherPerPool[j] = 0;
 
                 amountToWithdrawToTreasury +=
                     (_lotteries[_lotteryId].rewardsBreakdown[j] *
@@ -498,7 +493,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
         );
 
         unchecked {
-            currentLotteryId++;
+            currentLotteryId.add(1);
         }
 
         _lotteries[currentLotteryId] = Lottery({
@@ -661,7 +656,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
         uint32[] memory ticketNumbers = new uint32[](length);
         bool[] memory ticketStatuses = new bool[](length);
 
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i = 0; i < length; i.add(1)) {
             ticketNumbers[i] = uint32(
                 reverseValueAndConvertToUint(_tickets[_ticketIds[i]].number)
             );
@@ -736,11 +731,11 @@ contract Coinsino is ReentrancyGuard, Ownable {
         uint256 lotteryId = _lotteryId;
         // uint32 _poolLength = 6;
 
-        for (uint256 i = 0; i < _size; i++) {
+        for (uint256 i = 0; i < _size; i.add(1)) {
             uint256 reward = 0;
             uint32 rewardPool = 0;
 
-            for (uint32 _pool = 0; _pool < 6; _pool++) {
+            for (uint32 _pool = 0; _pool < 6; _pool.add(1)) {
                 uint256 currentReward = _calculateRewardsForTicketId(
                     lotteryId,
                     lotteryTicketIds[i],
@@ -826,7 +821,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
         uint32[] memory ticketNumbers = new uint32[](length);
         bool[] memory ticketStatuses = new bool[](length);
 
-        for (uint256 i = 0; i < length; i++) {
+        for (uint256 i = 0; i < length; i.add(1)) {
             lotteryTicketIds[i] = _userTicketIdsPerLotteryId[_user][_lotteryId][
                 i + _cursor
             ];
@@ -949,7 +944,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
     function st2num(string memory numString) internal pure returns (uint256) {
         bytes memory b = bytes(numString);
         uint256 result = 0;
-        for (uint256 i = 0; i < b.length; i++) {
+        for (uint256 i = 0; i < b.length; i.add(1)) {
             uint256 c = uint256(uint8(b[i]));
             if (c >= 48 && c <= 57) {
                 result = result * 10 + (c - 48);
@@ -973,7 +968,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
         string memory _tempValue = new string(_baseBytes.length);
         bytes memory _newValue = bytes(_tempValue);
 
-        for (uint256 i = 0; i < _baseBytes.length; i++) {
+        for (uint256 i = 0; i < _baseBytes.length; i.add(1)) {
             _newValue[_baseBytes.length - i - 1] = _baseBytes[i];
         }
 
@@ -993,12 +988,6 @@ contract Coinsino is ReentrancyGuard, Ownable {
      */
     function getBalance() public view returns (uint256) {
         return address(this).balance;
-    }
-
-    function unsafeInc(uint256 x) private pure returns (uint256) {
-        unchecked {
-            return x + 1;
-        }
     }
 
     // Function to receive Ether. msg.data must be empty
