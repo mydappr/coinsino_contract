@@ -286,10 +286,10 @@ contract Coinsino is ReentrancyGuard, Ownable {
 
             if (rewardForTicketId != 0) {
                 // Increment the reward to transfer
-                rewardInEtherToTransfer += rewardForTicketId;
+                rewardInEtherToTransfer.add(rewardForTicketId);
             } else {
                 // increment the reward by 0
-                rewardInEtherToTransfer += 0;
+                rewardInEtherToTransfer.add(0);
             }
         }
 
@@ -406,8 +406,10 @@ contract Coinsino is ReentrancyGuard, Ownable {
             amountToWithdrawToTreasury = 0;
         }
 
-        amountToWithdrawToTreasury += (_lotteries[_lotteryId]
-            .amountCollectedInEther - amountToShareToWinners);
+        amountToWithdrawToTreasury.add(
+            (_lotteries[_lotteryId].amountCollectedInEther -
+                amountToShareToWinners)
+        );
 
         (bool sent, ) = treasuryAddress.call{value: amountToWithdrawToTreasury}(
             ""
@@ -436,7 +438,7 @@ contract Coinsino is ReentrancyGuard, Ownable {
             "Lottery not open"
         );
 
-        _lotteries[_lotteryId].amountCollectedInEther += msg.value;
+        _lotteries[_lotteryId].amountCollectedInEther.add(msg.value);
 
         emit LotteryInjection(_lotteryId, msg.value);
     }
