@@ -391,10 +391,10 @@ contract Coinsino is ReentrancyGuard, Ownable {
             } else {
                 _lotteries[_lotteryId].etherPerPool[j] = 0;
 
-                amountToWithdrawToTreasury +=
+                amountToWithdrawToTreasury.add(
                     (_lotteries[_lotteryId].rewardsBreakdown[j] *
-                        amountToShareToWinners) /
-                    10000;
+                        amountToShareToWinners) / 10000
+                );
             }
         }
 
@@ -752,18 +752,6 @@ contract Coinsino is ReentrancyGuard, Ownable {
                 if (reward == 0) {
                     rewardPool = 0;
                 }
-
-                // console.log(
-                //     "---------------------------------------------------------------"
-                // );
-                // console.log("Current reward: ", currentReward);
-                // console.log("pool: ", _pool);
-
-                // console.log("reward: ", reward);
-                // console.log("reward pool: ", rewardPool);
-                // console.log(
-                //     "---------------------------------------------------------------"
-                // );
             }
 
             maxLotteryRewardPerTicket[i] = reward;
